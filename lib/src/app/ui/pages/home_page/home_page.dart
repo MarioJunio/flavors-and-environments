@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> strokeValue;
+  late Animation<double> _gadgetValueTween;
 
   @override
   void initState() {
@@ -24,14 +24,15 @@ class _HomePageState extends State<HomePage>
       duration: const Duration(seconds: 3),
     );
 
-    strokeValue = Tween<double>(
-      begin: 5,
-      end: 20,
+    _gadgetValueTween = Tween<double>(
+      begin: 0,
+      end: 180,
     ).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
     );
-
-    _animationController.forward();
   }
 
   @override
@@ -46,8 +47,20 @@ class _HomePageState extends State<HomePage>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _startAnimationBtn(context),
-            _textSlideAnimation,
-            _animatedBuilder(context),
+            SizedBox(
+              width: double.infinity,
+              child: Center(
+                child: _textSlideAnimation,
+              ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _animatedBuilder(context),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -57,19 +70,41 @@ class _HomePageState extends State<HomePage>
   AnimatedBuilder _animatedBuilder(context) => AnimatedBuilder(
         animation: _animationController,
         builder: (context, child) {
-          return CircularGadgetWidget(
-            thumbSize: 150,
-            strokeColor: Theme.of(context).primaryColor.withAlpha(50),
-            strokeValueColor: Theme.of(context).primaryColor,
-            centerColor: Colors.transparent,
-            strokeWidth: strokeValue.value,
+          return SizedBox.fromSize(
+            size: const Size(200, 200),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "${_gadgetValueTween.value.toInt()} km/h",
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 18,
+                          ),
+                    ),
+                  ),
+                ),
+                CircularGadgetWidget(
+                  strokeColor: Theme.of(context).primaryColor.withAlpha(40),
+                  strokeValueColor: Theme.of(context).primaryColor,
+                  centerColor: Colors.grey.withAlpha(10),
+                  strokeWidth: 8,
+                  min: 0.0,
+                  max: 180.0,
+                  value: _gadgetValueTween.value,
+                ),
+              ],
+            ),
           );
         },
       );
 
   get _textSlideAnimation => AppTextPresentationAnimation(
         controller: _animationController,
-        text: "Olá seja bem vindo, vamos iniciar a criação da sua conta!",
+        text: "Iniciando corrida!!!",
       );
 
   Widget _startAnimationBtn(context) => ElevatedButton(

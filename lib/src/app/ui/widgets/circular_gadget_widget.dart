@@ -4,27 +4,31 @@ import 'package:flutter/src/foundation/diagnostics.dart';
 
 class CircularGadgetWidget extends LeafRenderObjectWidget {
   CircularGadgetWidget({
-    required this.thumbSize,
+    required this.strokeWidth,
     required this.strokeColor,
     required this.strokeValueColor,
     required this.centerColor,
-    this.strokeWidth = 30,
+    required this.min,
+    required this.max,
+    required this.value,
   });
 
   final double strokeWidth;
   final Color strokeColor;
   final Color strokeValueColor;
   final Color centerColor;
-  final double thumbSize;
+  final double min, max, value;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return CircularGadgetRender(
-      thumbSize: thumbSize,
       centerColor: centerColor,
       strokeColor: strokeColor,
       strokeValueColor: strokeValueColor,
       strokeWidth: strokeWidth,
+      max: max,
+      min: min,
+      value: value,
     );
   }
 
@@ -34,7 +38,9 @@ class CircularGadgetWidget extends LeafRenderObjectWidget {
     renderObject.strokeColor = strokeColor;
     renderObject.strokeValueColor = strokeValueColor;
     renderObject.centerColor = centerColor;
-    renderObject.thumbSize = thumbSize;
+    renderObject.min = min;
+    renderObject.max = max;
+    renderObject.value = value;
   }
 
   @override
@@ -44,7 +50,9 @@ class CircularGadgetWidget extends LeafRenderObjectWidget {
     properties.add(ColorProperty("strokeColor", strokeColor));
     properties.add(ColorProperty("strokeValueColor", strokeValueColor));
     properties.add(ColorProperty("centerColor", centerColor));
-    properties.add(DoubleProperty("thumbSize", thumbSize));
     properties.add(DoubleProperty("strokeWidth", strokeWidth));
+    properties.add(DoubleProperty("min", min));
+    properties.add(DoubleProperty("max", max));
+    properties.add(DoubleProperty("value", value));
   }
 }

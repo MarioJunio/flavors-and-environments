@@ -19,7 +19,7 @@ class AppTextPresentationAnimation extends StatefulWidget {
 class _AppTextPresentationAnimationState
     extends State<AppTextPresentationAnimation> {
   late Animation<Offset> translateAnimation;
-  late Animation<double> fadeOutAnimation;
+  late Animation<double> textOpacity;
 
   @override
   void initState() {
@@ -39,17 +39,43 @@ class _AppTextPresentationAnimationState
       ),
     );
 
-    fadeOutAnimation = Tween<double>(
-      begin: 1,
-      end: 0,
+    textOpacity = TweenSequence(
+      <TweenSequenceItem<double>>[
+        TweenSequenceItem(
+          tween: Tween<double>(
+            begin: 0,
+            end: 1,
+          ).chain(
+            CurveTween(
+              curve: Curves.easeIn,
+            ),
+          ),
+          weight: 30,
+        ),
+        TweenSequenceItem(
+          tween: Tween<double>(
+            begin: 1,
+            end: 1,
+          ).chain(
+            CurveTween(
+              curve: Curves.easeIn,
+            ),
+          ),
+          weight: 40,
+        ),
+        TweenSequenceItem(
+          tween: Tween<double>(begin: 1, end: 0).chain(
+            CurveTween(
+              curve: Curves.easeOut,
+            ),
+          ),
+          weight: 30,
+        ),
+      ],
     ).animate(
       CurvedAnimation(
         parent: widget.controller,
-        curve: const Interval(
-          0.9,
-          1,
-          curve: Curves.linearToEaseOut,
-        ),
+        curve: const Interval(0, 1),
       ),
     );
   }
@@ -62,16 +88,18 @@ class _AppTextPresentationAnimationState
     );
   }
 
-  Widget _animateBuilder(context, child) => Opacity(
-        opacity: fadeOutAnimation.value,
-        alwaysIncludeSemantics: true,
-        child: Transform.translate(
-          offset: translateAnimation.value,
-          filterQuality: FilterQuality.high,
-          child: Text(
-            widget.text,
-            style: Theme.of(context).textTheme.displayMedium,
-          ),
+  Widget _animateBuilder(context, child) {
+    return Opacity(
+      opacity: textOpacity.value,
+      alwaysIncludeSemantics: true,
+      child: Transform.translate(
+        offset: translateAnimation.value,
+        filterQuality: FilterQuality.high,
+        child: Text(
+          widget.text,
+          style: Theme.of(context).textTheme.displayMedium,
         ),
-      );
+      ),
+    );
+  }
 }

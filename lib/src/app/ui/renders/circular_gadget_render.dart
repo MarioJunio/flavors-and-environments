@@ -3,23 +3,31 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 class CircularGadgetRender extends RenderBox {
+  final double startAngle = 90;
+  final double fullAngle = 360;
+
   Color _strokeColor;
   Color _strokeValueColor;
   Color _centerColor;
-  double _thumbSize;
   double _strokeWidth;
+  double _min, _max;
+  double _value;
 
   CircularGadgetRender({
     required Color strokeColor,
     required Color strokeValueColor,
     required Color centerColor,
-    required double thumbSize,
     required double strokeWidth,
+    required double min,
+    required double max,
+    required double value,
   })  : _strokeColor = strokeColor,
         _strokeValueColor = strokeValueColor,
         _centerColor = centerColor,
-        _thumbSize = thumbSize,
-        _strokeWidth = strokeWidth;
+        _strokeWidth = strokeWidth,
+        _min = min,
+        _max = max,
+        _value = value;
 
   Color get strokeColor => _strokeColor;
 
@@ -48,15 +56,6 @@ class CircularGadgetRender extends RenderBox {
     }
   }
 
-  double get thumbSize => _thumbSize;
-
-  set thumbSize(double value) {
-    if (_thumbSize != value) {
-      _thumbSize = value;
-      markNeedsPaint();
-    }
-  }
-
   double get strokeWidth => _strokeWidth;
 
   set strokeWidth(double value) {
@@ -66,27 +65,46 @@ class CircularGadgetRender extends RenderBox {
     }
   }
 
+  double get min => _min;
+
+  set min(double value) {
+    if (_min != value) {
+      _min = value;
+      markNeedsPaint();
+    }
+  }
+
+  double get max => _max;
+
+  set max(double value) {
+    if (_max != value) {
+      _max = value;
+      markNeedsPaint();
+    }
+  }
+
+  double get value => _value;
+
+  set value(double value) {
+    if (_value != value) {
+      _value = value;
+      markNeedsPaint();
+    }
+  }
+
   @override
   void performLayout() {
-    final desiredWidth = thumbSize;
-    final desiredHeight = thumbSize;
-
-    final desiredSize = Size(desiredWidth, desiredHeight);
-
-    size = constraints.constrain(desiredSize);
+    size = Size(constraints.maxWidth, constraints.maxHeight);
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
     final Canvas canvas = context.canvas;
 
-    canvas.save();
-
     canvas.translate(offset.dx, offset.dy);
 
     const Offset arcOffset = Offset(0, 0);
-    const double radius = 29;
-    const double radiusOffset = radius / 2;
+    final Offset arcCenterOffset = Offset(strokeWidth / 2, strokeWidth / 2);
 
     final paintArcStroke = Paint()
       ..color = _strokeColor
@@ -96,10 +114,10 @@ class CircularGadgetRender extends RenderBox {
     _drawArc(
       canvas,
       arcOffset,
-      Size(_thumbSize, _thumbSize),
+      size,
       paintArcStroke,
-      90.0,
-      360.0,
+      startAngle,
+      fullAngle,
     );
 
     final paintArcStrokeAchieved = Paint()
@@ -112,8 +130,8 @@ class CircularGadgetRender extends RenderBox {
       arcOffset,
       size,
       paintArcStrokeAchieved,
-      90.0,
-      130.0,
+      startAngle,
+      _currentValue,
     );
 
     final paintArcFill = Paint()
@@ -122,12 +140,14 @@ class CircularGadgetRender extends RenderBox {
 
     _drawArc(
       canvas,
-      const Offset(radiusOffset, radiusOffset),
-      Size(_thumbSize - radius, _thumbSize - radius),
+      arcCenterOffset,
+      Size(size.width - strokeWidth, size.height - strokeWidth),
       paintArcFill,
-      90.0,
-      360.0,
+      fullAngle,
+      fullAngle,
     );
+
+    canvas.save();
   }
 
   void _drawArc(Canvas canvas, Offset offset, Size size, Paint paint,
@@ -140,6 +160,10 @@ class CircularGadgetRender extends RenderBox {
       paint,
     );
   }
+
+  double get _currentValue => (value - min) / _maxUnitValue;
+
+  double get _maxUnitValue => (max - min) / fullAngle;
 
   double _toRadians(double degree) => (degree / 180) * math.pi;
 }
