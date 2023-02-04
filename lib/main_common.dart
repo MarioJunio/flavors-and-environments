@@ -1,3 +1,4 @@
+import 'package:circle_gadget/examples/example_page.dart';
 import 'package:flavors/flavor_config.dart';
 import 'package:flavors/src/app/ui/pages/home_page/home_page.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ void mainCommon(Env env) {
           ),
         ),
       ),
-      home: const HomePage(),
+      home: env == Env.dev ? const HomePage() : const ExamplePage(),
     ),
   );
 }

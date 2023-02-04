@@ -1,6 +1,6 @@
+import 'package:circle_gadget/circle_gadget.dart';
 import 'package:flavors/flavor_config.dart';
 import 'package:flavors/src/app/ui/widgets/app_text_presentation_animation.dart';
-import 'package:flavors/src/app/ui/widgets/circular_gadget_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -70,8 +70,11 @@ class _HomePageState extends State<HomePage>
   AnimatedBuilder _animatedBuilder(context) => AnimatedBuilder(
         animation: _animationController,
         builder: (context, child) {
+          const double width = 200;
+          const double height = 200;
+
           return SizedBox.fromSize(
-            size: const Size(200, 200),
+            size: const Size(width, height),
             child: Stack(
               children: [
                 Positioned.fill(
@@ -88,6 +91,8 @@ class _HomePageState extends State<HomePage>
                   ),
                 ),
                 CircularGadgetWidget(
+                  width: width,
+                  height: height,
                   strokeColor: Theme.of(context).primaryColor.withAlpha(40),
                   strokeValueColor: Theme.of(context).primaryColor,
                   centerColor: Colors.grey.withAlpha(10),
